@@ -1,0 +1,16 @@
+{
+  "description": "`True` is an int in Python; the contract still refuses it.",
+  "document": {
+    "boot_id": "3f2a91c0",
+    "expires_at": "2026-01-01T00:00:30.000Z",
+    "extension_version": "0.1",
+    "issued_at": "2026-01-01T00:00:00.000Z",
+    "node_id": "svc/api-7",
+    "sequence": true
+  },
+  "name": "sequence-boolean",
+  "reason": "schema_invalid",
+  "violations": [
+    "sequence must be an integer"
+  ]
+}

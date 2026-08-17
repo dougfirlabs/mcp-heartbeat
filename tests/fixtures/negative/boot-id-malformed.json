@@ -1,0 +1,16 @@
+{
+  "description": "The epoch id has a narrower alphabet than the participant id.",
+  "document": {
+    "boot_id": "has/slash",
+    "expires_at": "2026-01-01T00:00:30.000Z",
+    "extension_version": "0.1",
+    "issued_at": "2026-01-01T00:00:00.000Z",
+    "node_id": "svc/api-7",
+    "sequence": 12
+  },
+  "name": "boot-id-malformed",
+  "reason": "schema_invalid",
+  "violations": [
+    "boot_id must be an opaque identifier matching the profile pattern"
+  ]
+}

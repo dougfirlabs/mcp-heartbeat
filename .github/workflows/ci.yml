@@ -1,0 +1,132 @@
+# Continuous integration for mcp-heartbeat.
+#
+# Three lanes, and they are separate because they need incompatible
+# environments — not for tidiness:
+#
+#   * `suite` runs the package's own tests on a clean runner with only
+#     the standard library plus pytest. It is the lane that can prove
+#     "this package needs nothing", because nothing is what is installed.
+#     It also builds the wheel and the sdist: `tests/test_packaging.py`
+#     drives `tools/verify_wheel.py`, which installs the built wheel into
+#     a throwaway virtualenv with `--no-index` and probes it there, and
+#     `tests/test_release.py` drives `tools/build_release.py`, which
+#     builds both artifacts twice and requires the digests to agree.
+#
+#   * `sdk` installs the pinned official MCP SDK. It cannot share an
+#     environment with the lane above and still prove anything: an
+#     interpreter that has the SDK on its path cannot demonstrate that
+#     `import mcp_heartbeat` succeeds without it.
+#
+#   * `demonstration` runs the two-participant Docker demonstration for
+#     real. `tests/test_demo.py` asserts against a *committed* evidence
+#     record — the right shape for a unit suite, but a committed record
+#     goes stale on its own. This lane keeps it honest by running the
+#     thing again on a machine that has never seen it, re-reading the
+#     container hardening off the live containers with `docker inspect`,
+#     and asserting the runner is back at baseline afterwards.
+#
+# NOTHING HERE PUBLISHES. No step tags a version, uploads a distribution,
+# pushes an image, or creates a release, and `permissions: contents: read`
+# means the token could not do so if one were added by accident.
+# Publication is a manual act by the release authority — see GOVERNANCE.md.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  suite:
+    name: package suite (python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # pytest and the build backend, and deliberately nothing else. The
+      # package declares no runtime dependencies, so anything installed
+      # here that it then imported would be a defect this lane exists to
+      # catch.
+      - name: install test and build tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest pytest-timeout build setuptools wheel
+
+      - name: package suite
+        run: python -m pytest -q tests
+
+  sdk:
+    name: isolated official-SDK lane
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # The lane builds its own virtualenv and installs the exact pins
+      # itself, so the runner's interpreter stays clean and the pinned
+      # `pydantic-core` cannot be resolved against something else that
+      # happens to be present.
+      - name: SDK conformance against the pinned official SDK
+        run: tools/verify_sdk.sh
+
+      - name: show the recorded attestation
+        if: always()
+        run: cat docs/sdk-verification.json || true
+
+  demonstration:
+    name: two-participant demonstration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # No pip install at all. The driver is standard library only, and
+      # both demonstration images are `python:3.12-slim` pinned by digest
+      # plus source — there is no dependency to install anywhere in this
+      # lane, which is the package's own claim exercised end to end.
+      - name: run the demonstration
+        run: python demo/run_demo.py --output demo/evidence/ci.json
+
+      # The record is the interesting output whether or not the run
+      # passed: a failure is diagnosable from it, and a pass is the
+      # evidence. It is bounded and carries no credentials or host paths
+      # by construction — `tests/test_demo.py` asserts that too.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: demonstration-evidence
+          path: demo/evidence/ci.json
+          if-no-files-found: warn
+
+      # `down` never removes images, so the runner is not expected back
+      # at *image* baseline; containers, volumes and networks are, and
+      # `run_demo.py` has already asserted it. This is the belt-and-braces
+      # sweep for a run that died before its teardown.
+      - name: sweep
+        if: always()
+        run: |
+          docker compose -f demo/docker-compose.yml -p mcp-heartbeat-demo \
+            --profile observe down --volumes --remove-orphans --rmi local || true

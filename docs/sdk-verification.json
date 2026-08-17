@@ -1,0 +1,35 @@
+{
+  "adapter_digest": "250aaa0ad4196e7ab84cc9595dd6a6d2a7062587f32c8a61f8678c291f7cb12c",
+  "attested_trees": [
+    "src/mcp_heartbeat",
+    "src/mcp_heartbeat_current",
+    "tests/current"
+  ],
+  "constants_rederived": 18,
+  "does_not_authorize": [
+    "treating any other matrix case as exercised",
+    "external publication, package upload, image push, or standards submission"
+  ],
+  "identifier_grammar_cases": 12,
+  "implements_revision": "2026-07-28",
+  "invalidated_if": [
+    "any file under the attested trees is added, removed, moved, or edited",
+    "the installed SDK is anything other than mcp==2.0.0",
+    "the recorded suite reports any failure or error"
+  ],
+  "matches_pin": true,
+  "note": "Written by the run it describes. No path, host, or interpreter location is recorded: the versions, the counts, and the digest are what make the leg reproducible, and nothing else here would.",
+  "record": "official-sdk-leg-verification",
+  "recorded_by": "tools/verify_sdk.sh",
+  "recorded_on": "2026-08-17",
+  "scope": "This record attests one run of tests/current against the pinned official SDK, in an isolated venv, over the trees named in attested_trees. It is keyed to adapter_digest, so it lapses the moment any of those sources changes -- it cannot be inherited by a different tree, a different SDK, or a later edit.",
+  "sdk_distribution": "mcp",
+  "sdk_types_distribution": "mcp-types",
+  "sdk_types_version": "2.0.0",
+  "sdk_version": "2.0.0",
+  "suite": "tests/current",
+  "tests_collected": 171,
+  "tests_failed": 0,
+  "tests_passed": 171,
+  "tests_skipped": 0
+}

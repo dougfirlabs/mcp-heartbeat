@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dougfirlabs.com/schema/mcp-heartbeat-demo-evidence-0.1.schema.json",
+  "title": "mcp-heartbeat two-participant demonstration evidence",
+  "description": "One run of demo/run_demo.py: the hardening posture read off the running containers, the observing participant's scenario verdicts, and the host baseline before and after. Deliberately contains no logs beyond a bounded tail, no host paths, no credentials, and no prose narrative.",
+  "type": "object",
+  "required": ["schema_version", "artifact", "run", "baseline", "hardening", "observation", "checks", "verdict"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "artifact": {"const": "heartbeat-two-participant-demonstration"},
+    "verdict": {"enum": ["PASS", "FAIL"]},
+    "run": {
+      "type": "object",
+      "required": ["started_at", "project"],
+      "properties": {
+        "started_at": {"type": "string"},
+        "finished_at": {"type": "string"},
+        "project": {"type": "string"},
+        "observer_exit_code": {"type": "integer"},
+        "observer_log": {"type": "string"}
+      }
+    },
+    "baseline": {
+      "description": "Identifier sets are compared, not counts: a run that leaked one volume and removed another would balance out under counting.",
+      "type": "object",
+      "required": ["before", "after", "delta", "torn_down"],
+      "properties": {
+        "torn_down": {"type": "boolean"},
+        "before": {"$ref": "#/$defs/counts"},
+        "after": {"$ref": "#/$defs/counts"},
+        "delta": {
+          "type": "object",
+          "required": ["containers", "volumes", "networks", "images"],
+          "additionalProperties": {
+            "type": "object",
+            "required": ["before", "after", "leaked", "removed"],
+            "properties": {
+              "before": {"type": "integer"},
+              "after": {"type": "integer"},
+              "leaked": {"type": "array", "items": {"type": "string"}},
+              "removed": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        }
+      }
+    },
+    "hardening": {
+      "description": "One entry per rule per container, read from `docker inspect` on the RUNNING container rather than from the Compose file.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["container", "check", "passed"],
+        "properties": {
+          "container": {"type": "string"},
+          "check": {"type": "string"},
+          "passed": {"type": "boolean"}
+        }
+      }
+    },
+    "observation": {
+      "description": "The observing participant's own record, written inside its container and copied out of the named evidence volume.",
+      "type": "object",
+      "required": ["schema_version", "run", "scenarios", "summary"],
+      "properties": {
+        "schema_version": {"const": "0.1"},
+        "scenarios": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["scenario_id", "title", "verdict", "checks"],
+            "properties": {
+              "scenario_id": {"type": "string"},
+              "title": {"type": "string"},
+              "verdict": {"enum": ["PASS", "FAIL"]},
+              "duration_seconds": {"type": "number"},
+              "checks": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["name", "passed"],
+                  "properties": {
+                    "name": {"type": "string"},
+                    "passed": {"type": "boolean"}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "ledgers": {
+          "type": "object",
+          "properties": {
+            "transitions": {"type": "array"},
+            "refusals": {"type": "array"}
+          }
+        },
+        "summary": {
+          "type": "object",
+          "required": ["total", "passed", "failed", "ok"],
+          "properties": {
+            "total": {"type": "integer"},
+            "passed": {"type": "integer"},
+            "failed": {"type": "integer"},
+            "ok": {"type": "boolean"}
+          }
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["check", "passed"],
+        "properties": {
+          "check": {"type": "string"},
+          "passed": {"type": "boolean"}
+        }
+      }
+    },
+    "notes": {"type": "object"}
+  },
+  "$defs": {
+    "counts": {
+      "type": "object",
+      "required": ["containers", "volumes", "networks", "images"],
+      "additionalProperties": {"type": "integer"}
+    }
+  }
+}

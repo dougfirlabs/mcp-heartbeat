@@ -1,0 +1,103 @@
+{
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "bom-ref": "pkg:pypi/mcp@2.0.0",
+      "name": "mcp",
+      "properties": [
+        {"name": "python:extra", "value": "current"},
+        {"name": "python:version-specifier", "value": "==2.0.0"},
+        {"name": "python:pinned", "value": "true"},
+        {
+          "name": "python:requires-dist",
+          "value": "mcp==2.0.0; extra == \"current\""
+        }
+      ],
+      "purl": "pkg:pypi/mcp@2.0.0",
+      "scope": "optional",
+      "type": "library",
+      "version": "2.0.0"
+    },
+    {
+      "bom-ref": "pkg:pypi/mcp-types@2.0.0",
+      "name": "mcp-types",
+      "properties": [
+        {"name": "python:extra", "value": "current"},
+        {"name": "python:version-specifier", "value": "==2.0.0"},
+        {"name": "python:pinned", "value": "true"},
+        {
+          "name": "python:requires-dist",
+          "value": "mcp-types==2.0.0; extra == \"current\""
+        }
+      ],
+      "purl": "pkg:pypi/mcp-types@2.0.0",
+      "scope": "optional",
+      "type": "library",
+      "version": "2.0.0"
+    },
+    {
+      "bom-ref": "pkg:pypi/pytest",
+      "name": "pytest",
+      "properties": [
+        {"name": "python:extra", "value": "dev"},
+        {"name": "python:version-specifier", "value": ">=7.0"},
+        {"name": "python:pinned", "value": "false"},
+        {
+          "name": "python:requires-dist",
+          "value": "pytest>=7.0; extra == \"dev\""
+        }
+      ],
+      "purl": "pkg:pypi/pytest",
+      "scope": "optional",
+      "type": "library"
+    },
+    {
+      "bom-ref": "pkg:pypi/pytest-timeout",
+      "name": "pytest-timeout",
+      "properties": [
+        {"name": "python:extra", "value": "dev"},
+        {"name": "python:version-specifier", "value": ">=2.0"},
+        {"name": "python:pinned", "value": "false"},
+        {
+          "name": "python:requires-dist",
+          "value": "pytest-timeout>=2.0; extra == \"dev\""
+        }
+      ],
+      "purl": "pkg:pypi/pytest-timeout",
+      "scope": "optional",
+      "type": "library"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "bom-ref": "pkg:pypi/mcp-heartbeat@0.1.0",
+      "description": "A small, transport-neutral liveness-lease contract for MCP participants",
+      "hashes": [{"alg": "SHA-256", "content": "6c92a1f2ac6c723c752e4a056bad539cc30f03b3a628934449aaf35593d0974c"}],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "name": "mcp-heartbeat",
+      "properties": [
+        {"name": "python:requires-python", "value": ">=3.11"},
+        {"name": "python:shipped-packages", "value": "mcp_heartbeat, mcp_heartbeat_current, mcp_heartbeat_legacy"},
+        {"name": "python:runtime-dependencies", "value": "none"},
+        {"name": "release:sdist-sha256", "value": "4007acf983d6c7ae76b89f297e2cc0481a12d7dbcfb8283702f8c9ff6641d9ba"},
+        {"name": "release:source-date-epoch", "value": "1786838400"}
+      ],
+      "purl": "pkg:pypi/mcp-heartbeat@0.1.0",
+      "type": "library",
+      "version": "0.1.0"
+    },
+    "properties": [
+      {"name": "release:note", "value": "Derived from the built wheel's METADATA, not from pyproject.toml. The base install declares no runtime dependency; every component below is optional and names the extra that pulls it in."}
+    ],
+    "timestamp": "2026-08-16T00:00:00Z"
+  },
+  "serialNumber": "urn:uuid:6c92a1f2-ac6c-723c-752e-4a056bad539c",
+  "specVersion": "1.5",
+  "version": 1
+}

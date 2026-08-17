@@ -1,0 +1,16 @@
+# Maintainers of mcp-heartbeat
+#
+# One line per maintainer: role, then GitHub handle.
+#
+# Deliberately no email addresses. Every channel this project needs is
+# on GitHub — issues for defects, private vulnerability reporting for
+# security and conduct (see SECURITY.md and CODE_OF_CONDUCT.md) — and a
+# maintainer file is a durable, indexed, public place for a personal
+# address to end up.
+
+release-authority   @dougfirlabs
+maintainer          @dougfirlabs
+
+# Release authority is what actually gates a release: see GOVERNANCE.md.
+# A maintainer can merge; only the release authority can tag, publish, or
+# change the licence, and none of those happen on a merge.

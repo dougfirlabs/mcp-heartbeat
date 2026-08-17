@@ -1,0 +1,16 @@
+# Local build artifacts from `pip wheel` / `python -m build`.
+build/
+dist/
+*.egg-info/
+__pycache__/
+*.py[cod]
+
+# The isolated virtualenv `tools/verify_sdk.sh` builds for the official
+# SDK. It is deliberately not the environment the rest of the package is
+# tested in — see the header of that script.
+.venv-mcp-sdk/
+
+# Test and type-checker caches.
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

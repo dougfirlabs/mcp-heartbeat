@@ -1,0 +1,430 @@
+{
+  "corpus_version": "legacy-repaired-1",
+  "supersedes": null,
+  "description": "Repaired legacy-adapter conformance corpus. Separately versioned from the immutable HB-00 historical corpus, which is held in the originating repository, so the repaired expectations never overwrite the archived ones. Both are independently runnable.",
+  "mcp_protocol_era": "2025-06-18",
+  "extension_version": "0.1",
+  "defects_closed": ["D-02", "D-03", "D-04", "D-10"],
+  "historical_corpus": {
+    "immutable": true,
+    "reproducers": "test_hb00_reproducers.py",
+    "note": "The reproducers assert the defective behaviour of the originating integration lab. This adapter is a separate implementation and does not modify them; they must stay green."
+  },
+  "vectors": [
+    {
+      "id": "d04-positive-negotiates-the-pinned-era",
+      "defect": "D-04",
+      "polarity": "positive",
+      "kind": "protocol_negotiation",
+      "input": {"requested": "2025-06-18"},
+      "expect": {
+        "outcome": "accepted",
+        "code": "supported_version",
+        "negotiated": "2025-06-18",
+        "disagreement": false
+      }
+    },
+    {
+      "id": "d04-positive-negotiates-the-older-supported-era",
+      "defect": "D-04",
+      "polarity": "positive",
+      "kind": "protocol_negotiation",
+      "input": {"requested": "2025-03-26"},
+      "expect": {
+        "outcome": "accepted",
+        "code": "supported_version",
+        "negotiated": "2025-03-26",
+        "disagreement": false
+      }
+    },
+    {
+      "id": "d04-negative-refuses-a-revision-that-never-existed",
+      "defect": "D-04",
+      "polarity": "negative",
+      "kind": "protocol_negotiation",
+      "input": {"requested": "1900-01-01"},
+      "expect": {
+        "outcome": "unsupported",
+        "code": "unsupported_version",
+        "negotiated": null,
+        "disagreement": true
+      },
+      "note": "The archived server echoed this value back verbatim and recorded nothing."
+    },
+    {
+      "id": "d04-negative-refuses-the-modern-era-explicitly",
+      "defect": "D-04",
+      "polarity": "negative",
+      "kind": "protocol_negotiation",
+      "input": {"requested": "2026-07-28"},
+      "expect": {
+        "outcome": "unsupported",
+        "code": "modern_era_refused",
+        "negotiated": null,
+        "disagreement": true
+      }
+    },
+    {
+      "id": "d04-negative-missing-version-is-ambiguous",
+      "defect": "D-04",
+      "polarity": "negative",
+      "kind": "protocol_negotiation",
+      "input": {},
+      "expect": {
+        "outcome": "ambiguous",
+        "code": "version_missing",
+        "negotiated": null,
+        "disagreement": true
+      }
+    },
+    {
+      "id": "d04-negative-non-string-version-is-ambiguous",
+      "defect": "D-04",
+      "polarity": "negative",
+      "kind": "protocol_negotiation",
+      "input": {"requested": 20250618},
+      "expect": {
+        "outcome": "ambiguous",
+        "code": "version_malformed",
+        "negotiated": null,
+        "disagreement": true
+      }
+    },
+
+    {
+      "id": "s1-positive-heartbeat-capability-negotiated",
+      "defect": null,
+      "polarity": "positive",
+      "kind": "heartbeat_negotiation",
+      "input": {
+        "capabilities": {"experimental": {"presenceLease": {"extension_version": "0.1"}}}
+      },
+      "expect": {
+        "outcome": "accepted",
+        "code": "capability_accepted",
+        "supported": true,
+        "extension_version": "0.1"
+      }
+    },
+    {
+      "id": "s1-negative-unknown-peer-is-heartbeat-unsupported",
+      "defect": null,
+      "polarity": "negative",
+      "kind": "heartbeat_negotiation",
+      "input": {"capabilities": {"resources": {"subscribe": true}}},
+      "expect": {
+        "outcome": "unsupported",
+        "code": "capability_absent",
+        "supported": false,
+        "extension_version": null
+      },
+      "note": "Not fatal. Ordinary MCP continues; the peer is simply reported heartbeat-unsupported."
+    },
+    {
+      "id": "s1-negative-dual-era-claim-is-ambiguous",
+      "defect": null,
+      "polarity": "negative",
+      "kind": "heartbeat_negotiation",
+      "input": {
+        "capabilities": {
+          "experimental": {"presenceLease": {"extension_version": "0.1"}},
+          "extensions": {"com.dougfirlabs/heartbeat": {}}
+        }
+      },
+      "expect": {
+        "outcome": "ambiguous",
+        "code": "capability_ambiguous",
+        "supported": false,
+        "extension_version": null
+      },
+      "note": "A legacy connection cannot silently claim current MCP semantics."
+    },
+    {
+      "id": "s1-negative-modern-only-identifier-is-refused",
+      "defect": null,
+      "polarity": "negative",
+      "kind": "heartbeat_negotiation",
+      "input": {"capabilities": {"extensions": {"com.dougfirlabs/heartbeat": {}}}},
+      "expect": {
+        "outcome": "unsupported",
+        "code": "modern_era_refused",
+        "supported": false,
+        "extension_version": null
+      }
+    },
+    {
+      "id": "s1-negative-unreadable-extension-version",
+      "defect": null,
+      "polarity": "negative",
+      "kind": "heartbeat_negotiation",
+      "input": {
+        "capabilities": {"experimental": {"presenceLease": {"extension_version": "9.9"}}}
+      },
+      "expect": {
+        "outcome": "unsupported",
+        "code": "unsupported_extension_version",
+        "supported": false,
+        "extension_version": null
+      }
+    },
+
+    {
+      "id": "d02-positive-subscribe-advertised-because-it-is-served",
+      "defect": "D-02",
+      "polarity": "positive",
+      "kind": "capability_agreement",
+      "input": {
+        "mode": "derive",
+        "implemented": ["resources/read", "resources/subscribe", "resources/unsubscribe"]
+      },
+      "expect": {"subscribe_advertised": true, "violations": []}
+    },
+    {
+      "id": "d02-positive-subscribe-not-advertised-because-it-is-not-served",
+      "defect": "D-02",
+      "polarity": "positive",
+      "kind": "capability_agreement",
+      "input": {"mode": "derive", "implemented": ["resources/read"]},
+      "expect": {"subscribe_advertised": false, "violations": []}
+    },
+    {
+      "id": "d02-negative-advertised-without-a-handler",
+      "defect": "D-02",
+      "polarity": "negative",
+      "kind": "capability_agreement",
+      "input": {
+        "mode": "audit",
+        "advertised": {"resources": {"subscribe": true, "listChanged": false}},
+        "implemented": ["resources/read"]
+      },
+      "expect": {"violations": ["advertises resources.subscribe"]},
+      "note": "This is D-02 itself, as the archived lab server shipped it."
+    },
+    {
+      "id": "d02-negative-handler-without-an-advertisement",
+      "defect": "D-02",
+      "polarity": "negative",
+      "kind": "capability_agreement",
+      "input": {
+        "mode": "audit",
+        "advertised": {"resources": {"subscribe": false, "listChanged": false}},
+        "implemented": ["resources/read", "resources/subscribe"]
+      },
+      "expect": {"violations": ["serves resources/subscribe"]}
+    },
+    {
+      "id": "d02-negative-heartbeat-advertised-without-authoritative-read",
+      "defect": "D-02",
+      "polarity": "negative",
+      "kind": "capability_agreement",
+      "input": {
+        "mode": "audit",
+        "advertised": {
+          "resources": {"subscribe": false, "listChanged": false},
+          "experimental": {"presenceLease": {"extension_version": "0.1"}}
+        },
+        "implemented": []
+      },
+      "expect": {"violations": ["serves no resources/read"]}
+    },
+    {
+      "id": "d02-negative-modern-identifier-advertised-on-a-legacy-session",
+      "defect": "D-02",
+      "polarity": "negative",
+      "kind": "capability_agreement",
+      "input": {
+        "mode": "audit",
+        "advertised": {
+          "resources": {"subscribe": false, "listChanged": false},
+          "extensions": {"com.dougfirlabs/heartbeat": {}}
+        },
+        "implemented": []
+      },
+      "expect": {"violations": ["modern identifier"]}
+    },
+
+    {
+      "id": "d03-positive-complete-handshake-both-directions",
+      "defect": "D-03",
+      "polarity": "positive",
+      "kind": "handshake",
+      "input": {
+        "implemented": ["resources/read"],
+        "steps": [
+          {"method": "initialize", "expect": "ok"},
+          {"method": "notifications/initialized", "expect": "ok"},
+          {"method": "resources/read", "expect": "ok"}
+        ]
+      },
+      "expect": {"final_state": "ready", "heartbeat_ready": true}
+    },
+    {
+      "id": "d03-negative-request-before-initialized-is-refused",
+      "defect": "D-03",
+      "polarity": "negative",
+      "kind": "handshake",
+      "input": {
+        "implemented": ["resources/read"],
+        "steps": [
+          {"method": "initialize", "expect": "ok"},
+          {"method": "resources/read", "expect": "error", "reason": "session_not_initialized"}
+        ]
+      },
+      "expect": {"final_state": "initializing", "heartbeat_ready": false},
+      "note": "The archived handshake never sent notifications/initialized and nothing noticed."
+    },
+    {
+      "id": "d03-negative-initialized-twice-is-out-of-order",
+      "defect": "D-03",
+      "polarity": "negative",
+      "kind": "handshake",
+      "input": {
+        "implemented": ["resources/read"],
+        "steps": [
+          {"method": "initialize", "expect": "ok"},
+          {"method": "notifications/initialized", "expect": "ok"},
+          {"method": "notifications/initialized", "expect": "error", "reason": "lifecycle_out_of_order"}
+        ]
+      },
+      "expect": {"final_state": "ready", "heartbeat_ready": true}
+    },
+    {
+      "id": "d03-negative-initialized-before-initialize-is-out-of-order",
+      "defect": "D-03",
+      "polarity": "negative",
+      "kind": "handshake",
+      "input": {
+        "implemented": ["resources/read"],
+        "steps": [
+          {"method": "notifications/initialized", "expect": "error", "reason": "lifecycle_out_of_order"}
+        ]
+      },
+      "expect": {"final_state": "created", "heartbeat_ready": false}
+    },
+    {
+      "id": "d04-negative-failed-negotiation-leaves-the-session-closed",
+      "defect": "D-04",
+      "polarity": "negative",
+      "kind": "handshake",
+      "input": {
+        "implemented": ["resources/read"],
+        "protocol_version": "1900-01-01",
+        "steps": [
+          {"method": "initialize", "expect": "error", "reason": "negotiation_failed"},
+          {"method": "resources/read", "expect": "error", "reason": "session_not_initialized"}
+        ]
+      },
+      "expect": {"final_state": "failed", "heartbeat_ready": false, "disagreements": 1}
+    },
+
+    {
+      "id": "d10-positive-standard-hint-carries-uri-only",
+      "defect": "D-10",
+      "polarity": "positive",
+      "kind": "updated_parse",
+      "input": {
+        "method": "notifications/resources/updated",
+        "params": {"uri": "presence://acme/worker-1"}
+      },
+      "expect": {
+        "address": "presence://acme/worker-1",
+        "revision": null,
+        "digest": null,
+        "carries_revision_metadata": false,
+        "overloaded_standard_method": false
+      },
+      "note": "What a conformant non-lab peer actually sends. The archived consumer's digest defence evaluated to nothing against it, silently."
+    },
+    {
+      "id": "d10-positive-extension-notification-carries-metadata",
+      "defect": "D-10",
+      "polarity": "positive",
+      "kind": "updated_parse",
+      "input": {
+        "method": "notifications/experimental/presenceLease/updated",
+        "params": {
+          "uri": "presence://acme/worker-1",
+          "revision": "e1:7",
+          "digest": "sha256:1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a"
+        }
+      },
+      "expect": {
+        "address": "presence://acme/worker-1",
+        "revision": "e1:7",
+        "digest": "sha256:1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a",
+        "carries_revision_metadata": true,
+        "overloaded_standard_method": false
+      }
+    },
+    {
+      "id": "d10-negative-metadata-under-the-standard-method-is-dropped",
+      "defect": "D-10",
+      "polarity": "negative",
+      "kind": "updated_parse",
+      "input": {
+        "method": "notifications/resources/updated",
+        "params": {
+          "uri": "presence://acme/worker-1",
+          "revision": "e1:7",
+          "digest": "sha256:1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a"
+        }
+      },
+      "expect": {
+        "address": "presence://acme/worker-1",
+        "revision": null,
+        "digest": null,
+        "carries_revision_metadata": false,
+        "overloaded_standard_method": true
+      },
+      "note": "Exactly the payload the archived lab emitted. It is not trusted, and the drop is flagged rather than silent."
+    },
+    {
+      "id": "d10-negative-extension-notification-without-a-digest",
+      "defect": "D-10",
+      "polarity": "negative",
+      "kind": "updated_parse",
+      "input": {
+        "method": "notifications/experimental/presenceLease/updated",
+        "params": {"uri": "presence://acme/worker-1", "revision": "e1:7"}
+      },
+      "expect": {"error": "malformed_hint"}
+    },
+    {
+      "id": "d10-negative-extension-notification-with-a-bogus-digest",
+      "defect": "D-10",
+      "polarity": "negative",
+      "kind": "updated_parse",
+      "input": {
+        "method": "notifications/experimental/presenceLease/updated",
+        "params": {
+          "uri": "presence://acme/worker-1",
+          "revision": "e1:7",
+          "digest": "not-a-digest"
+        }
+      },
+      "expect": {"error": "malformed_hint"}
+    },
+    {
+      "id": "d10-negative-hint-for-an-unaddressable-resource",
+      "defect": "D-10",
+      "polarity": "negative",
+      "kind": "updated_parse",
+      "input": {
+        "method": "notifications/resources/updated",
+        "params": {"uri": "file:///etc/passwd"}
+      },
+      "expect": {"error": "malformed_hint"}
+    },
+    {
+      "id": "d10-negative-unknown-notification-method",
+      "defect": "D-10",
+      "polarity": "negative",
+      "kind": "updated_parse",
+      "input": {
+        "method": "notifications/resources/list_changed",
+        "params": {"uri": "presence://acme/worker-1"}
+      },
+      "expect": {"error": "malformed_hint"}
+    }
+  ]
+}

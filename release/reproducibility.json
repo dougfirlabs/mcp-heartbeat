@@ -1,0 +1,86 @@
+{
+  "artifact": "release-reproducibility",
+  "builds": [
+    {
+      "artifacts": {
+        "mcp_heartbeat-0.1.0-py3-none-any.whl": {
+          "bytes": 82017,
+          "sha256": "6c92a1f2ac6c723c752e4a056bad539cc30f03b3a628934449aaf35593d0974c"
+        },
+        "mcp_heartbeat-0.1.0.tar.gz": {
+          "bytes": 84010,
+          "sha256": "4007acf983d6c7ae76b89f297e2cc0481a12d7dbcfb8283702f8c9ff6641d9ba"
+        }
+      },
+      "build": "one",
+      "input_file_mode": "0o644",
+      "input_mtime": 1786838400,
+      "source_dir": "src-one"
+    },
+    {
+      "artifacts": {
+        "mcp_heartbeat-0.1.0-py3-none-any.whl": {
+          "bytes": 82017,
+          "sha256": "6c92a1f2ac6c723c752e4a056bad539cc30f03b3a628934449aaf35593d0974c"
+        },
+        "mcp_heartbeat-0.1.0.tar.gz": {
+          "bytes": 84010,
+          "sha256": "4007acf983d6c7ae76b89f297e2cc0481a12d7dbcfb8283702f8c9ff6641d9ba"
+        }
+      },
+      "build": "two-independent",
+      "input_file_mode": "0o644",
+      "input_mtime": 1786838400,
+      "source_dir": "src-two-independent"
+    }
+  ],
+  "checks": [
+    {
+      "check": "the_two_independent_builds_agree_byte_for_byte",
+      "detail": [
+        "mcp_heartbeat-0.1.0-py3-none-any.whl",
+        "mcp_heartbeat-0.1.0.tar.gz"
+      ],
+      "ok": true
+    },
+    {
+      "check": "the_rebuild_matches_the_committed_checksums",
+      "detail": "match",
+      "ok": true
+    },
+    {
+      "check": "the_wheel_declares_no_unconditional_dependency",
+      "detail": [
+        "mcp",
+        "mcp-types",
+        "pytest",
+        "pytest-timeout"
+      ],
+      "ok": true
+    }
+  ],
+  "digests": {
+    "mcp_heartbeat-0.1.0-py3-none-any.whl": {
+      "sha256": "6c92a1f2ac6c723c752e4a056bad539cc30f03b3a628934449aaf35593d0974c"
+    },
+    "mcp_heartbeat-0.1.0.tar.gz": {
+      "sha256": "4007acf983d6c7ae76b89f297e2cc0481a12d7dbcfb8283702f8c9ff6641d9ba"
+    }
+  },
+  "normalisation": {
+    "inputs": "every source mtime set to source_date_epoch; file mode 0644, directory mode 0755",
+    "sdist": "container rewritten: members sorted, uid/gid 0 with empty uname/gname, mtimes set to source_date_epoch, modes normalised, gzip header mtime 0. Payloads are compared byte-for-byte against the backend's archive.",
+    "wheel": "none \u2014 SOURCE_DATE_EPOCH is honoured by the backend, so these are its own bytes"
+  },
+  "package": "mcp-heartbeat",
+  "source_date_epoch": 1786838400,
+  "toolchain": {
+    "build": "1.5.0",
+    "python": "3.12.3",
+    "python_implementation": "CPython",
+    "setuptools": "82.0.1"
+  },
+  "toolchain_note": "Reproducible given this toolchain. A different Python or setuptools may emit different bytes and still be correct; the recorded versions are part of the claim, not incidental.",
+  "verdict": "PASS",
+  "version": "0.1.0"
+}

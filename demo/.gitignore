@@ -1,0 +1,4 @@
+# Evidence records are run output, not source. The committed copy of a
+# reviewed run lives at `release/demo-evidence.json`; anything a local run
+# writes here is disposable and regenerable with `python run_demo.py`.
+evidence/

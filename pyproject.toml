@@ -1,0 +1,95 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcp-heartbeat"
+version = "0.1.0"
+description = "A small, transport-neutral liveness-lease contract for MCP participants"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+keywords = ["mcp", "heartbeat", "liveness", "presence"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries",
+]
+
+# Intentionally empty and enforced by tests/test_purity.py. The core runs in
+# a clean environment with no host application, web framework,
+# or MCP SDK present. Anything that needs one of those is an adapter, and an
+# adapter lives outside this package.
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-timeout>=2.0",
+]
+
+# One wheel ships all three packages: the portable core and both era
+# adapters. The boundary that matters is not *what is in the wheel* but
+# *what importing it costs* — `import mcp_heartbeat` must still succeed with
+# nothing but the standard library on the path, and the official SDK must
+# stay an optional extra that only `mcp_heartbeat_current.sdk` reaches for.
+# Shipping the adapters therefore widens the distribution without widening
+# the dependency: the adapters are stdlib + core too, and the one module
+# that is not degrades to `SdkUnavailable` rather than failing at import.
+#
+# What stays out is what the package is *checked by* rather than what it
+# *is*: `src/mcp_heartbeat_conformance/` (the HB-05 matrices), `tools/`
+# (conformance tooling) and the independent implementation under
+# `cleanroom/`. A verifier that shipped inside the artifact it verifies
+# would be checking itself. (That last one is named only by its directory
+# here on purpose: the conformance matrix asserts its *package* name
+# appears nowhere in this file, so that no edit can declare it by
+# accident.) Proven against the built wheel and sdist by
+# `tools/verify_wheel.py`, which reads the artifacts' file lists rather
+# than this comment.
+
+# The MCP 2026-07-28 adapter (`mcp_heartbeat_current`). An *extra*, never a
+# runtime dependency: the core above stays installable with nothing but the
+# standard library, and only `mcp_heartbeat_current.sdk` imports these.
+#
+# Exact `==` pins on purpose. These carry wire constants — a minor release
+# that moved an error code or a `_meta` key would change the protocol the
+# adapter claims to implement — so an upgrade should be a deliberate act
+# that `sdk.assert_contract_matches_sdk()` re-verifies.
+#
+# Installing them into a host application's shared virtualenv resolves `pydantic-core`
+# away from the version its installed `pydantic` pins, so the conformance
+# suite runs in a dedicated environment instead: `tools/verify_sdk.sh`.
+current = [
+    "mcp==2.0.0",
+    "mcp-types==2.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = [
+    "mcp_heartbeat",
+    "mcp_heartbeat.*",
+    "mcp_heartbeat_current",
+    "mcp_heartbeat_current.*",
+    "mcp_heartbeat_legacy",
+    "mcp_heartbeat_legacy.*",
+]
+# Belt and braces. `include` alone already leaves the conformance package
+# out, but an exclusion states the intent, and a future glob widened by
+# reflex (`mcp_heartbeat*`) would then still not ship the verifier.
+exclude = ["mcp_heartbeat_conformance", "mcp_heartbeat_conformance.*"]
+
+[tool.setuptools.package-data]
+mcp_heartbeat = ["py.typed"]
+mcp_heartbeat_current = ["py.typed"]
+mcp_heartbeat_legacy = ["py.typed"]
+
+# Own pytest configuration so `pytest` roots itself here and inherits none
+# of a parent repository's settings — the package must stay testable after
+# it is lifted out of whatever tree it was assembled in.
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+timeout = 30

@@ -1,0 +1,108 @@
+# mcp-heartbeat — two-participant demonstration.
+#
+# Two containers on a private bridge network. One publishes a heartbeat
+# stream; the other holds lineage state and watches that stream across a
+# status transition, an expiry, and a recovery under a new epoch.
+#
+#   docker compose config                                  # validate + resolve
+#   docker compose up -d --build                           # publisher only
+#   docker compose --profile observe run --rm hb-demo-observer
+#   docker compose down --volumes --remove-orphans
+#
+# Or, with the baseline and hardening assertions around it:
+#
+#   python run_demo.py
+#
+# Nothing is published beyond 127.0.0.1, no image is pushed anywhere, and
+# `down --volumes` removes the whole demonstration including its evidence
+# volume. Note that `down` never removes *images* — see README.md for the
+# `--rmi local` form that returns the host to exactly its pre-run state.
+
+name: mcp-heartbeat-demo
+
+# Anchor so a reviewer can confirm the posture once instead of per service,
+# and so the two services cannot drift apart. This mirrors the precedent set
+# by the presence lab; `run_demo.py` re-checks every one of these against the
+# RUNNING container with `docker inspect`, because a Compose file records an
+# intention and only the daemon knows what was applied.
+x-hardening: &hardening
+  user: "10001:10001"
+  read_only: true
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  pids_limit: 128
+  mem_limit: ${HB_DEMO_MEM_LIMIT:-256m}
+  cpus: ${HB_DEMO_CPU_LIMIT:-0.50}
+  restart: "no"
+  tmpfs:
+    - /tmp:size=16m,mode=1777
+
+x-core: &core
+  # The core package, injected as an additional build context rather than
+  # vendored into the demonstration. One copy of the source, no drift, and no
+  # need to make the whole repository a build context.
+  hb_core: ../src/mcp_heartbeat
+
+services:
+  # The subject: mints the heartbeat stream and answers three routes.
+  hb-demo-publisher:
+    <<: *hardening
+    build:
+      context: .
+      dockerfile: publisher/Dockerfile
+      additional_contexts: *core
+    image: mcp-heartbeat-demo-publisher:0.1.0
+    environment:
+      HB_DEMO_HOST: 0.0.0.0
+      HB_DEMO_PORT: ${HB_DEMO_PORT:-8981}
+      HB_DEMO_PARTICIPANT_ID: ${HB_DEMO_PARTICIPANT_ID:-demo/publisher-1}
+      # Short on purpose: `expiry` spends real wall-clock time, because a
+      # lease lapsing is inherently a wall-clock event and faking it with an
+      # injected clock would demonstrate the FakeClock, not the contract.
+      HB_DEMO_LEASE_SECONDS: ${HB_DEMO_LEASE_SECONDS:-6}
+      # The scenario control channel. Never part of the protocol, and never
+      # a heartbeat field — a real participant has no such endpoint.
+      HB_DEMO_ALLOW_CONTROL: ${HB_DEMO_ALLOW_CONTROL:-1}
+    # Loopback only. Comment this block out entirely and the publisher is
+    # reachable solely from inside the `demo` network — the observer does not
+    # need the published port, only a human does.
+    ports:
+      - "127.0.0.1:${HB_DEMO_HOST_PORT:-8981}:${HB_DEMO_PORT:-8981}"
+    networks:
+      - demo
+
+  # The observer: holds lineage state, renders the verdict, writes evidence.
+  hb-demo-observer:
+    <<: *hardening
+    profiles: ["observe"]
+    build:
+      context: .
+      dockerfile: observer/Dockerfile
+      additional_contexts: *core
+    image: mcp-heartbeat-demo-observer:0.1.0
+    environment:
+      HB_DEMO_PUBLISHER_URL: http://hb-demo-publisher:${HB_DEMO_PORT:-8981}
+      HB_DEMO_PARTICIPANT_ID: ${HB_DEMO_PARTICIPANT_ID:-demo/publisher-1}
+      HB_DEMO_EVIDENCE: /evidence/observation.json
+    depends_on:
+      hb-demo-publisher:
+        condition: service_healthy
+    networks:
+      - demo
+    volumes:
+      # The only writable mount, and a named volume rather than a bind so
+      # `down --volumes` leaves no host state behind.
+      - demo_evidence:/evidence
+
+networks:
+  demo:
+    driver: bridge
+    # No host networking and no external attachment: the publisher is
+    # reachable only from the observer and the published loopback port above.
+    internal: false
+
+volumes:
+  demo_evidence:
+    driver: local

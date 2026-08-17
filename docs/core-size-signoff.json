@@ -1,0 +1,24 @@
+{
+  "record": "portable-core-size-overrun-signoff",
+  "decision": "accepted",
+  "measured_loc": 430,
+  "prd_budget_loc": 400,
+  "overrun_loc": 30,
+  "option_chosen": "accept-430",
+  "approver": "Doug Fir Labs release authority for the mcp-heartbeat package",
+  "approved_on": "2026-08-16",
+  "recorded_by": "operator decision D1",
+  "justification_document": "docs/loc-budget.md",
+  "rationale": "The budget exists to stop the portable core from re-accumulating the facets that made the legacy presence package hard to adopt. Measured against that purpose it is working: the surface deliberately kept out is roughly 1900 LOC, about 4x the 30-line overrun. The three costed alternatives in docs/loc-budget.md each trade the overrun for something the PRD asked for -- moving issuer.py out of the core would leave the monotonic-counter and minted-epoch rules unowned by the contract that defines them, and relaxing the validator to first-failure would give up the exact-violation-set property the conformance corpus depends on. The operator accepts 430 rather than buying 30 lines with either.",
+  "scope": "This signoff accepts one specific measurement. It is keyed to measured_loc and prd_budget_loc, so it lapses the moment either changes -- it cannot be inherited by a different number.",
+  "invalidated_if": [
+    "the measured core size is anything other than 430 logical LOC",
+    "the PRD budget is anything other than 400 logical LOC",
+    "the set of modules counted as the portable core changes"
+  ],
+  "does_not_authorize": [
+    "raising the recorded ceiling CORE_CEILING_LOC",
+    "any further growth of the portable core",
+    "external publication, package upload, image push, or standards submission"
+  ]
+}

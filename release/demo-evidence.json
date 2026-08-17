@@ -1,0 +1,640 @@
+{
+  "artifact": "heartbeat-two-participant-demonstration",
+  "baseline": {
+    "after": {
+      "containers": 9,
+      "images": 36,
+      "networks": 4,
+      "volumes": 20
+    },
+    "before": {
+      "containers": 9,
+      "images": 36,
+      "networks": 4,
+      "volumes": 20
+    },
+    "delta": {
+      "containers": {
+        "after": 9,
+        "before": 9,
+        "leaked": [],
+        "removed": []
+      },
+      "images": {
+        "after": 34,
+        "before": 34,
+        "leaked": [
+          "6ac08c13a39b",
+          "7a7514baab4d"
+        ],
+        "removed": [
+          "45100154648f",
+          "715fd7602185"
+        ]
+      },
+      "networks": {
+        "after": 4,
+        "before": 4,
+        "leaked": [],
+        "removed": []
+      },
+      "volumes": {
+        "after": 20,
+        "before": 20,
+        "leaked": [],
+        "removed": []
+      }
+    },
+    "torn_down": true
+  },
+  "checks": [
+    {
+      "check": "every_hardening_rule_held_on_the_running_containers",
+      "detail": [],
+      "passed": true
+    },
+    {
+      "check": "every_scenario_passed",
+      "detail": {
+        "failed": 0,
+        "failed_scenarios": [],
+        "ok": true,
+        "passed": 5,
+        "total": 5
+      },
+      "passed": true
+    },
+    {
+      "check": "the_host_returned_to_its_pre_run_baseline",
+      "detail": "no containers, volumes or networks leaked",
+      "passed": true
+    }
+  ],
+  "hardening": [
+    {
+      "check": "the_container_is_actually_running",
+      "container": "hb-demo-publisher",
+      "detail": "running",
+      "passed": true
+    },
+    {
+      "check": "it_runs_as_a_non_root_user",
+      "container": "hb-demo-publisher",
+      "detail": "10001:10001",
+      "passed": true
+    },
+    {
+      "check": "it_is_not_privileged",
+      "container": "hb-demo-publisher",
+      "detail": false,
+      "passed": true
+    },
+    {
+      "check": "its_root_filesystem_is_read_only",
+      "container": "hb-demo-publisher",
+      "detail": true,
+      "passed": true
+    },
+    {
+      "check": "every_capability_is_dropped",
+      "container": "hb-demo-publisher",
+      "detail": [
+        "ALL"
+      ],
+      "passed": true
+    },
+    {
+      "check": "and_none_is_added_back",
+      "container": "hb-demo-publisher",
+      "detail": [],
+      "passed": true
+    },
+    {
+      "check": "privilege_escalation_is_refused",
+      "container": "hb-demo-publisher",
+      "detail": [
+        "no-new-privileges:true"
+      ],
+      "passed": true
+    },
+    {
+      "check": "its_pid_count_is_bounded",
+      "container": "hb-demo-publisher",
+      "detail": 128,
+      "passed": true
+    },
+    {
+      "check": "its_memory_is_bounded",
+      "container": "hb-demo-publisher",
+      "detail": 268435456,
+      "passed": true
+    },
+    {
+      "check": "its_cpu_is_bounded",
+      "container": "hb-demo-publisher",
+      "detail": 500000000,
+      "passed": true
+    },
+    {
+      "check": "it_does_not_use_host_networking",
+      "container": "hb-demo-publisher",
+      "detail": "mcp-heartbeat-demo_demo",
+      "passed": true
+    },
+    {
+      "check": "it_is_attached_only_to_the_private_demo_network",
+      "container": "hb-demo-publisher",
+      "detail": [
+        "mcp-heartbeat-demo_demo"
+      ],
+      "passed": true
+    },
+    {
+      "check": "it_bind_mounts_nothing_from_the_host",
+      "container": "hb-demo-publisher",
+      "detail": [],
+      "passed": true
+    },
+    {
+      "check": "it_mounts_no_docker_socket_and_no_host_home",
+      "container": "hb-demo-publisher",
+      "detail": [],
+      "passed": true
+    },
+    {
+      "check": "it_maps_no_host_device",
+      "container": "hb-demo-publisher",
+      "detail": null,
+      "passed": true
+    },
+    {
+      "check": "it_publishes_at_least_one_port",
+      "container": "hb-demo-publisher",
+      "detail": {
+        "8981/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "8981"
+          }
+        ]
+      },
+      "passed": true
+    },
+    {
+      "check": "every_published_port_is_bound_to_loopback_only",
+      "container": "hb-demo-publisher",
+      "detail": [
+        "127.0.0.1"
+      ],
+      "passed": true
+    },
+    {
+      "check": "its_only_writable_scratch_is_a_bounded_tmpfs",
+      "container": "hb-demo-publisher",
+      "detail": {
+        "/tmp": "size=16m,mode=1777"
+      },
+      "passed": true
+    },
+    {
+      "check": "the_container_is_actually_running",
+      "container": "hb-demo-observer",
+      "detail": "running",
+      "passed": true
+    },
+    {
+      "check": "it_runs_as_a_non_root_user",
+      "container": "hb-demo-observer",
+      "detail": "10001:10001",
+      "passed": true
+    },
+    {
+      "check": "it_is_not_privileged",
+      "container": "hb-demo-observer",
+      "detail": false,
+      "passed": true
+    },
+    {
+      "check": "its_root_filesystem_is_read_only",
+      "container": "hb-demo-observer",
+      "detail": true,
+      "passed": true
+    },
+    {
+      "check": "every_capability_is_dropped",
+      "container": "hb-demo-observer",
+      "detail": [
+        "ALL"
+      ],
+      "passed": true
+    },
+    {
+      "check": "and_none_is_added_back",
+      "container": "hb-demo-observer",
+      "detail": [],
+      "passed": true
+    },
+    {
+      "check": "privilege_escalation_is_refused",
+      "container": "hb-demo-observer",
+      "detail": [
+        "no-new-privileges:true"
+      ],
+      "passed": true
+    },
+    {
+      "check": "its_pid_count_is_bounded",
+      "container": "hb-demo-observer",
+      "detail": 128,
+      "passed": true
+    },
+    {
+      "check": "its_memory_is_bounded",
+      "container": "hb-demo-observer",
+      "detail": 268435456,
+      "passed": true
+    },
+    {
+      "check": "its_cpu_is_bounded",
+      "container": "hb-demo-observer",
+      "detail": 500000000,
+      "passed": true
+    },
+    {
+      "check": "it_does_not_use_host_networking",
+      "container": "hb-demo-observer",
+      "detail": "mcp-heartbeat-demo_demo",
+      "passed": true
+    },
+    {
+      "check": "it_is_attached_only_to_the_private_demo_network",
+      "container": "hb-demo-observer",
+      "detail": [
+        "mcp-heartbeat-demo_demo"
+      ],
+      "passed": true
+    },
+    {
+      "check": "it_bind_mounts_nothing_from_the_host",
+      "container": "hb-demo-observer",
+      "detail": [],
+      "passed": true
+    },
+    {
+      "check": "it_mounts_no_docker_socket_and_no_host_home",
+      "container": "hb-demo-observer",
+      "detail": [],
+      "passed": true
+    },
+    {
+      "check": "it_maps_no_host_device",
+      "container": "hb-demo-observer",
+      "detail": null,
+      "passed": true
+    },
+    {
+      "check": "every_published_port_is_bound_to_loopback_only",
+      "container": "hb-demo-observer",
+      "detail": [],
+      "passed": true
+    },
+    {
+      "check": "its_only_writable_scratch_is_a_bounded_tmpfs",
+      "container": "hb-demo-observer",
+      "detail": {
+        "/tmp": "size=16m,mode=1777"
+      },
+      "passed": true
+    }
+  ],
+  "notes": {
+    "hardening_source": "Every hardening check reads `docker inspect` on the RUNNING container, not the Compose file.",
+    "images": "`docker compose down` never removes images, by design \u2014 a re-run is fast because they survive. The image delta is therefore recorded, not asserted to zero. `down --rmi local` removes them."
+  },
+  "observation": {
+    "environment": {
+      "layout": "standalone",
+      "max_skew_seconds": 3600.0,
+      "publisher_state": {
+        "epoch_id": "295255aa66996687",
+        "frozen": false,
+        "lease_seconds": 6.0,
+        "next_sequence": 1,
+        "participant_id": "demo/publisher-1",
+        "restarts": 1,
+        "status": "draining"
+      }
+    },
+    "ledgers": {
+      "refusals": [],
+      "transitions": [
+        {
+          "at": "2026-08-17T03:43:54.368Z",
+          "epoch_id": "62e05ca77c3d6d68",
+          "expires_at": "2026-08-17T03:44:00.368Z",
+          "sequence": 0
+        },
+        {
+          "at": "2026-08-17T03:43:54.771Z",
+          "epoch_id": "62e05ca77c3d6d68",
+          "expires_at": "2026-08-17T03:44:00.771Z",
+          "sequence": 1
+        },
+        {
+          "at": "2026-08-17T03:43:55.173Z",
+          "epoch_id": "62e05ca77c3d6d68",
+          "expires_at": "2026-08-17T03:44:01.172Z",
+          "sequence": 2
+        },
+        {
+          "at": "2026-08-17T03:43:55.575Z",
+          "epoch_id": "62e05ca77c3d6d68",
+          "expires_at": "2026-08-17T03:44:01.574Z",
+          "sequence": 3
+        },
+        {
+          "at": "2026-08-17T03:43:55.576Z",
+          "epoch_id": "62e05ca77c3d6d68",
+          "expires_at": "2026-08-17T03:44:01.576Z",
+          "sequence": 4
+        },
+        {
+          "at": "2026-08-17T03:43:55.578Z",
+          "epoch_id": "62e05ca77c3d6d68",
+          "expires_at": "2026-08-17T03:44:01.578Z",
+          "sequence": 5
+        },
+        {
+          "at": "2026-08-17T03:44:01.587Z",
+          "epoch_id": "295255aa66996687",
+          "expires_at": "2026-08-17T03:44:07.587Z",
+          "sequence": 0
+        }
+      ]
+    },
+    "run": {
+      "base_url": "http://hb-demo-publisher:8981",
+      "duration_seconds": 7.229,
+      "finished_at": "2026-08-17T03:44:01.587Z",
+      "participant_id": "demo/publisher-1",
+      "started_at": "2026-08-17T03:43:54.358Z"
+    },
+    "scenarios": [
+      {
+        "checks": [
+          {
+            "detail": null,
+            "name": "the_first_heartbeat_is_admitted",
+            "passed": true
+          },
+          {
+            "detail": 0,
+            "name": "it_opens_the_stream_at_sequence_zero",
+            "passed": true
+          },
+          {
+            "detail": 5.999289,
+            "name": "the_observer_now_holds_a_fresh_lease",
+            "passed": true
+          },
+          {
+            "detail": {
+              "does_not_mean": "the participant's lease is fresh \u2014 refetch /heartbeat",
+              "means": "this process is running and answering",
+              "process": "alive"
+            },
+            "name": "healthz_reports_process_liveness_only_and_says_so",
+            "passed": true
+          }
+        ],
+        "duration_seconds": 0.002,
+        "observations": {
+          "epoch_id": "62e05ca77c3d6d68",
+          "healthz": {
+            "does_not_mean": "the participant's lease is fresh \u2014 refetch /heartbeat",
+            "means": "this process is running and answering",
+            "process": "alive"
+          }
+        },
+        "scenario_id": "handshake",
+        "title": "A first heartbeat opens an epoch at sequence 0",
+        "verdict": "PASS"
+      },
+      {
+        "checks": [
+          {
+            "detail": null,
+            "name": "heartbeat_1_is_admitted",
+            "passed": true
+          },
+          {
+            "detail": null,
+            "name": "heartbeat_2_is_admitted",
+            "passed": true
+          },
+          {
+            "detail": null,
+            "name": "heartbeat_3_is_admitted",
+            "passed": true
+          },
+          {
+            "detail": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "name": "the_sequence_rises_strictly",
+            "passed": true
+          },
+          {
+            "detail": [
+              "2026-08-17T03:44:00.368000+00:00",
+              "2026-08-17T03:44:00.771000+00:00",
+              "2026-08-17T03:44:01.172000+00:00",
+              "2026-08-17T03:44:01.574000+00:00"
+            ],
+            "name": "and_the_held_lease_moves_forward",
+            "passed": true
+          },
+          {
+            "detail": null,
+            "name": "the_epoch_did_not_change",
+            "passed": true
+          }
+        ],
+        "duration_seconds": 1.206,
+        "observations": {
+          "sequences": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        "scenario_id": "renewal",
+        "title": "Later heartbeats are admitted and the sequence rises",
+        "verdict": "PASS"
+      },
+      {
+        "checks": [
+          {
+            "detail": "serving",
+            "name": "the_publisher_starts_out_serving",
+            "passed": true
+          },
+          {
+            "detail": "draining",
+            "name": "the_transition_is_visible_on_a_refetched_document",
+            "passed": true
+          },
+          {
+            "detail": null,
+            "name": "the_heartbeat_carrying_it_is_still_admitted",
+            "passed": true
+          },
+          {
+            "detail": 5.999637,
+            "name": "the_lease_is_unaffected_by_the_status_change",
+            "passed": true
+          },
+          {
+            "detail": null,
+            "name": "a_draining_participant_is_still_fresh",
+            "passed": true
+          },
+          {
+            "detail": [
+              "com.dougfirlabs/heartbeat"
+            ],
+            "name": "the_status_rides_in_a_namespaced_extension",
+            "passed": true
+          }
+        ],
+        "duration_seconds": 0.003,
+        "observations": {
+          "status_after": "draining",
+          "status_before": "serving"
+        },
+        "scenario_id": "status-transition",
+        "title": "A status change is visible on refetch and does not affect the lease",
+        "verdict": "PASS"
+      },
+      {
+        "checks": [
+          {
+            "detail": {
+              "does_not_mean": "the participant's lease is fresh \u2014 refetch /heartbeat",
+              "means": "this process is running and answering",
+              "process": "alive"
+            },
+            "name": "the_frozen_participant_is_still_reachable",
+            "passed": true
+          },
+          {
+            "detail": 6.003,
+            "name": "the_held_lease_lapses_without_any_notification",
+            "passed": true
+          },
+          {
+            "detail": null,
+            "name": "the_redelivered_document_is_not_admitted_as_new",
+            "passed": true
+          },
+          {
+            "detail": {
+              "duplicate": true,
+              "reason": null
+            },
+            "name": "it_is_recognised_as_an_idempotent_duplicate_not_an_error",
+            "passed": true
+          },
+          {
+            "detail": "expired_on_arrival",
+            "name": "a_fresh_consumer_refuses_the_same_document_as_expired_on_arrival",
+            "passed": true
+          },
+          {
+            "detail": null,
+            "name": "so_a_lapsed_lease_cannot_be_inherited_by_a_new_observer",
+            "passed": true
+          },
+          {
+            "detail": null,
+            "name": "and_the_held_state_is_untouched_throughout",
+            "passed": true
+          }
+        ],
+        "duration_seconds": 6.007,
+        "observations": {
+          "frozen_at": "2026-08-17T03:43:55.579Z",
+          "lease_seconds": 6.0,
+          "seconds_until_lapse": 6.003
+        },
+        "scenario_id": "expiry",
+        "title": "A reachable but frozen participant's lease still lapses",
+        "verdict": "PASS"
+      },
+      {
+        "checks": [
+          {
+            "detail": null,
+            "name": "the_participant_is_admitted_again",
+            "passed": true
+          },
+          {
+            "detail": "295255aa66996687",
+            "name": "under_a_new_epoch",
+            "passed": true
+          },
+          {
+            "detail": 0,
+            "name": "with_the_sequence_reset",
+            "passed": true
+          },
+          {
+            "detail": 5.999422,
+            "name": "and_a_fresh_lease",
+            "passed": true
+          },
+          {
+            "detail": "boot_id_reuse",
+            "name": "replaying_the_retired_epoch_is_refused_as_boot_id_reuse",
+            "passed": true
+          },
+          {
+            "detail": null,
+            "name": "and_that_replay_did_not_disturb_the_held_state",
+            "passed": true
+          }
+        ],
+        "duration_seconds": 0.002,
+        "observations": {
+          "recovered_epoch": "295255aa66996687",
+          "retired_epoch": "62e05ca77c3d6d68",
+          "retired_epochs_tracked": 2
+        },
+        "scenario_id": "recovery",
+        "title": "A restart opens a new epoch and the old one can never return",
+        "verdict": "PASS"
+      }
+    ],
+    "schema_version": "0.1",
+    "summary": {
+      "failed": 0,
+      "failed_scenarios": [],
+      "ok": true,
+      "passed": 5,
+      "total": 5
+    }
+  },
+  "run": {
+    "finished_at": "2026-08-17T03:44:12.354Z",
+    "observer_exit_code": 0,
+    "observer_log": "hb-demo-observer-1  | [PASS] handshake: A first heartbeat opens an epoch at sequence 0\nhb-demo-observer-1  | [PASS] renewal: Later heartbeats are admitted and the sequence rises\nhb-demo-observer-1  | [PASS] status-transition: A status change is visible on refetch and does not affect the lease\nhb-demo-observer-1  | [PASS] expiry: A reachable but frozen participant's lease still lapses\nhb-demo-observer-1  | [PASS] recovery: A restart opens a new epoch and the old one can never return\nhb-demo-observer-1  | \nhb-demo-observer-1  | 5/5 scenarios passed \u2014 observation at /evidence/observation.json\n",
+    "project": "mcp-heartbeat-demo",
+    "started_at": "2026-08-17T03:43:46.331Z"
+  },
+  "schema_version": "0.1",
+  "verdict": "PASS"
+}

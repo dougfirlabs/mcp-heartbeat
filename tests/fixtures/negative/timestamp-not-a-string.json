@@ -1,0 +1,16 @@
+{
+  "description": "An epoch-seconds number is not RFC 3339.",
+  "document": {
+    "boot_id": "3f2a91c0",
+    "expires_at": 1767225600,
+    "extension_version": "0.1",
+    "issued_at": "2026-01-01T00:00:00.000Z",
+    "node_id": "svc/api-7",
+    "sequence": 12
+  },
+  "name": "timestamp-not-a-string",
+  "reason": "schema_invalid",
+  "violations": [
+    "expires_at must be an RFC 3339 UTC timestamp"
+  ]
+}

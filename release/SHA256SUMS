@@ -1,0 +1,14 @@
+# mcp-heartbeat 0.1.0 — release artifact checksums.
+#
+# Reproduce with:
+#     tools/build_release.py --check
+#
+# Or by hand, from a clean checkout:
+#     SOURCE_DATE_EPOCH=1786838400 python -m build --no-isolation
+#     (then normalise the sdist container — see docs/reproducible-builds.md;
+#      the wheel needs no normalising and is the backend's own bytes)
+#
+# Verify with:  sha256sum -c release/SHA256SUMS
+
+6c92a1f2ac6c723c752e4a056bad539cc30f03b3a628934449aaf35593d0974c  mcp_heartbeat-0.1.0-py3-none-any.whl
+4007acf983d6c7ae76b89f297e2cc0481a12d7dbcfb8283702f8c9ff6641d9ba  mcp_heartbeat-0.1.0.tar.gz

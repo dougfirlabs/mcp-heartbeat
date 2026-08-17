@@ -1,0 +1,19 @@
+{
+  "description": "Optional data must be namespaced so it cannot collide with core fields.",
+  "document": {
+    "boot_id": "3f2a91c0",
+    "expires_at": "2026-01-01T00:00:30.000Z",
+    "extension_version": "0.1",
+    "extensions": {
+      "run_id": "abc123"
+    },
+    "issued_at": "2026-01-01T00:00:00.000Z",
+    "node_id": "svc/api-7",
+    "sequence": 12
+  },
+  "name": "extension-key-not-namespaced",
+  "reason": "schema_invalid",
+  "violations": [
+    "extensions key 'run_id' must be namespaced (e.g. 'com.example')"
+  ]
+}

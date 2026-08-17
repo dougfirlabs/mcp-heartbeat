@@ -1,0 +1,16 @@
+{
+  "description": "A 0.1 reader refuses a document declaring another contract version.",
+  "document": {
+    "boot_id": "3f2a91c0",
+    "expires_at": "2026-01-01T00:00:30.000Z",
+    "extension_version": "0.2",
+    "issued_at": "2026-01-01T00:00:00.000Z",
+    "node_id": "svc/api-7",
+    "sequence": 12
+  },
+  "name": "unsupported-extension-version",
+  "reason": "unsupported_extension_version",
+  "violations": [
+    "extension_version must be '0.1', got '0.2'"
+  ]
+}

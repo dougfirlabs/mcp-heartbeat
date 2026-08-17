@@ -1,0 +1,16 @@
+{
+  "description": "A heartbeat is not a lifetime grant.",
+  "document": {
+    "boot_id": "3f2a91c0",
+    "expires_at": "2026-01-01T01:00:01.000Z",
+    "extension_version": "0.1",
+    "issued_at": "2026-01-01T00:00:00.000Z",
+    "node_id": "svc/api-7",
+    "sequence": 12
+  },
+  "name": "window-too-long",
+  "reason": "expiry_window_too_long",
+  "violations": [
+    "lease window must be <= 3600s"
+  ]
+}
