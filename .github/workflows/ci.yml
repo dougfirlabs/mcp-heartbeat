@@ -70,7 +70,18 @@ jobs:
           python -m pip install pytest pytest-timeout build setuptools wheel
 
       - name: package suite
-        run: python -m pytest -q tests
+        shell: bash
+        run: |
+          # Runtime compatibility is exercised on every supported Python.
+          # Release-byte reproducibility is intentionally scoped to the
+          # recorded canonical toolchain (CPython 3.12); the release evidence
+          # explicitly states that another Python may emit different, still
+          # correct wheel bytes.
+          if [[ "${{ matrix.python-version }}" == "3.12" ]]; then
+            python -m pytest -q tests
+          else
+            python -m pytest -q tests --ignore=tests/test_release.py
+          fi
 
   sdk:
     name: isolated official-SDK lane
